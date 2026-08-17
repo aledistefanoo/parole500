@@ -15,7 +15,7 @@
 - Side-by-side comparison: `/Users/alessandro.distefano/Documents/ChatGPT/New project/parola500/qa/full-comparison-final.png`
 - Desktop CSS viewport: 1178 × 1404 at density 1. The in-app browser capped a normal viewport capture at 1178 × 1200; measured page extent was 1178 × 1404.
 - Mobile CSS viewport and capture: 390 × 844 at density 1.
-- State: daily puzzle with one submitted guess (`AMICO` → `113`); source reference shows the same board state type with five submitted guesses.
+- Corrected state tested in browser: practice puzzle with one submitted guess (`ZAINO` → `113`), one manual red annotation, and a compatible suggested word (`TIMEO`).
 
 **Full-view comparison evidence**
 
@@ -33,8 +33,12 @@ The combined comparison confirms the same dark page structure, 1000 px header, e
 
 - Closed onboarding and started the game.
 - Entered a five-letter word with the on-screen keyboard and submitted it.
-- Verified duplicate-aware green/yellow/red evaluation and score summary (`113`).
-- Verified keyboard color state updates.
+- Verified that submitted letters stay neutral while only the three count tiles reveal `113`.
+- Clicked a submitted letter and verified the manual cycle begins at red; used **Azzera** and verified it returns to neutral.
+- Verified that the keyboard only marks used keys neutrally and never reveals semantic colors.
+- Verified **Suggerisci** inserts a word compatible with every previous count without identifying a secret letter.
+- Verified **Spazio** inserts `_` as an unknown-position placeholder.
+- Submitted `ZAINO`, confirming acceptance by the expanded 9,246-word dictionary.
 - Opened and closed Statistics.
 - Opened the Mode menu and switched to Allenamento.
 - Checked the browser console after each primary flow: no errors or warnings.
@@ -53,6 +57,7 @@ The combined comparison confirms the same dark page structure, 1000 px header, e
 - Colors and tokens: background, neutral surfaces, borders, green/yellow/red semantic states, text contrast, and focus outlines are consistent and accessible.
 - Image/asset fidelity: no source assets are hotlinked or copied. The implementation deliberately uses an original text wordmark and no decorative image assets.
 - Copy: all game-specific language, help, errors, modes, levels, statistics, and result messaging are in Italian.
+- Rules: implementation was checked against the original Word500 help page; exact letter states remain hidden and user annotations are independent of the secret answer.
 
 **Follow-up Polish**
 

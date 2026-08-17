@@ -1,20 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ITALIAN_WORDS } from "./words-it.js";
 
-const WORDS = [
-  "abete", "acero", "acqua", "aglio", "aiuto", "alibi", "amico", "amore", "ancia", "anima",
-  "aroma", "asino", "astro", "avena", "avvio", "bagno", "baita", "banco", "barca", "bello",
-  "bosco", "bravo", "breve", "buono", "calma", "canto", "carta", "cassa", "causa", "cervo",
-  "cielo", "cifra", "clima", "colle", "corpo", "corso", "crema", "cuore", "dente", "dolce",
-  "donna", "edera", "elica", "esame", "fango", "festa", "fiato", "fiore", "foglia", "forma",
-  "forno", "forza", "frase", "frigo", "fumo", "gamba", "gatto", "gelato", "gioia", "gioco",
-  "giuro", "gomma", "grano", "hotel", "isola", "ladro", "lampo", "latte", "legno", "lento",
-  "libro", "lotta", "luce", "luna", "madre", "mango", "mare", "matto", "miele", "mondo",
-  "monte", "morte", "museo", "nave", "notte", "nuovo", "opera", "ovale", "padre", "palla",
-  "pane", "parco", "paura", "pesce", "piano", "piede", "porta", "posto", "prato", "primo",
-  "radio", "regno", "ricco", "ruota", "sacco", "saldo", "salto", "scala", "scena", "serra",
-  "sogno", "sole", "sonno", "sorte", "spesa", "stato", "stile", "suono", "tempo", "terra",
-  "torre", "treno", "uomo", "vento", "verde", "vetro", "viola", "vita", "volpe", "zaino"
-].filter((word) => word.length === 5);
+const WORD_SET = new Set(ITALIAN_WORDS);
 
 const ANSWERS = [
   "abete", "acqua", "amico", "aroma", "astro", "barca", "bosco", "carta", "cervo", "cielo",
@@ -91,32 +78,38 @@ export function App() {
   const [modal, setModal] = useState("help");
   const [current, setCurrent] = useState("");
   const [guesses, setGuesses] = useState([]);
+  const [annotations, setAnnotations] = useState([]);
   const [notice, setNotice] = useState("");
   const [stats, setStats] = useState(() => loadStats() || EMPTY_STATS);
   const [completed, setCompleted] = useState(false);
 
   const puzzleNo = dayNumber();
-  const answer = mode === "daily" ? ANSWERS[((puzzleNo % ANSWERS.length) + ANSWERS.length) % ANSWERS.length] : ANSWERS[practiceIndex];
+  const difficultyOffset = { facile: 0, classica: 11, avanzata: 23 }[difficulty];
+  const answer = mode === "daily" ? ANSWERS[((puzzleNo + difficultyOffset) % ANSWERS.length + ANSWERS.length) % ANSWERS.length] : ANSWERS[practiceIndex];
+  const storageKey = `parola500-${puzzleNo}-${difficulty}`;
   const won = guesses.at(-1) === answer;
   const gameOver = won || guesses.length >= MAX_GUESSES;
 
   useEffect(() => {
     if (mode !== "daily") {
       setGuesses([]);
+      setAnnotations([]);
       setCurrent("");
       setCompleted(false);
       return;
     }
     try {
-      const saved = JSON.parse(localStorage.getItem(`parola500-${puzzleNo}`));
+      const saved = JSON.parse(localStorage.getItem(storageKey));
       setGuesses(saved?.guesses || []);
+      setAnnotations(saved?.annotations || (saved?.guesses || []).map(() => Array(5).fill("")));
       setCompleted(Boolean(saved?.completed));
     } catch {
       setGuesses([]);
+      setAnnotations([]);
       setCompleted(false);
     }
     setCurrent("");
-  }, [mode, puzzleNo]);
+  }, [mode, storageKey]);
 
   useEffect(() => {
     if (!notice) return undefined;
@@ -124,10 +117,10 @@ export function App() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
-  const finishGame = useCallback((isWin, count, nextGuesses) => {
+  const finishGame = useCallback((isWin, count, nextGuesses, nextAnnotations) => {
     if (completed) return;
     setCompleted(true);
-    if (mode === "daily") localStorage.setItem(`parola500-${puzzleNo}`, JSON.stringify({ guesses: nextGuesses, completed: true }));
+    if (mode === "daily") localStorage.setItem(storageKey, JSON.stringify({ guesses: nextGuesses, annotations: nextAnnotations, completed: true }));
     const updated = {
       ...stats,
       played: stats.played + 1,
@@ -138,46 +131,45 @@ export function App() {
     };
     setStats(updated);
     localStorage.setItem("parola500-stats", JSON.stringify(updated));
-  }, [completed, mode, puzzleNo, stats]);
+  }, [completed, mode, stats, storageKey]);
 
   const submit = useCallback(() => {
     if (gameOver) return setNotice(won ? "Hai già risolto il gioco di oggi" : "Partita terminata");
     if (current.length !== 5) return setNotice("Inserisci una parola di 5 lettere");
-    if (!WORDS.includes(current)) return setNotice("Parola non presente nel dizionario");
+    if (current.includes("_")) return setNotice("Completa la parola prima di inviarla");
+    if (!WORD_SET.has(current)) return setNotice("Parola non presente nel dizionario");
     if (difficulty !== "avanzata" && new Set(current).size !== 5) return setNotice("In questo livello le lettere non possono ripetersi");
     if (difficulty === "facile" && /[jkwxy]/.test(current)) return setNotice("Il livello Facile non usa J, K, W, X o Y");
     const next = [...guesses, current];
+    const nextAnnotations = [...annotations, Array(5).fill("")];
     setGuesses(next);
+    setAnnotations(nextAnnotations);
     setCurrent("");
-    if (mode === "daily") localStorage.setItem(`parola500-${puzzleNo}`, JSON.stringify({ guesses: next, completed: false }));
+    if (mode === "daily") localStorage.setItem(storageKey, JSON.stringify({ guesses: next, annotations: nextAnnotations, completed: false }));
     if (current === answer || next.length === MAX_GUESSES) {
-      finishGame(current === answer, next.length, next);
+      finishGame(current === answer, next.length, next, nextAnnotations);
       window.setTimeout(() => setModal("result"), 650);
     }
-  }, [answer, current, difficulty, finishGame, gameOver, guesses, mode, puzzleNo, won]);
+  }, [annotations, answer, current, difficulty, finishGame, gameOver, guesses, mode, storageKey, won]);
 
   const input = useCallback((key) => {
     if (modal || panel || gameOver) return;
     if (key === "BACKSPACE") return setCurrent((value) => value.slice(0, -1));
     if (key === "ENTER") return submit();
+    if ((key === " " || key === "SPACE" || key === "-") && current.length < 5) return setCurrent((value) => `${value}_`);
     if (/^[A-Z]$/.test(key) && current.length < 5) setCurrent((value) => `${value}${key.toLowerCase()}`);
   }, [current.length, gameOver, modal, panel, submit]);
 
   useEffect(() => {
-    const onKeyDown = (event) => input(event.key.toUpperCase());
+    const onKeyDown = (event) => {
+      if (event.key === " " || event.key === "-") event.preventDefault();
+      input(event.key === " " ? "SPACE" : event.key.toUpperCase());
+    };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [input]);
 
-  const keyStates = useMemo(() => {
-    const rank = { absent: 1, present: 2, correct: 3 };
-    const states = {};
-    guesses.forEach((guess) => evaluate(guess, answer).forEach((state, i) => {
-      const letter = guess[i].toUpperCase();
-      if (!states[letter] || rank[state] > rank[states[letter]]) states[letter] = state;
-    }));
-    return states;
-  }, [answer, guesses]);
+  const usedLetters = useMemo(() => new Set(guesses.join("").toUpperCase()), [guesses]);
 
   const changeMode = (nextMode) => {
     setMode(nextMode);
@@ -188,18 +180,48 @@ export function App() {
   const newPractice = () => {
     setPracticeIndex((value) => (value + 17) % ANSWERS.length);
     setGuesses([]);
+    setAnnotations([]);
     setCurrent("");
     setCompleted(false);
     setModal(null);
   };
 
-  const revealHint = () => {
-    const hidden = answer.split("").find((letter, index) => !guesses.some((guess) => guess[index] === letter));
-    setNotice(hidden ? `Suggerimento: la parola contiene la lettera ${hidden.toUpperCase()}` : "Hai già tutti gli indizi necessari");
+  const suggestWord = () => {
+    if (!guesses.length) return setNotice("Fai almeno un tentativo per ricevere un suggerimento");
+    const candidates = ITALIAN_WORDS.filter((candidate) => {
+      if (guesses.includes(candidate)) return false;
+      if (difficulty !== "avanzata" && new Set(candidate).size !== 5) return false;
+      if (difficulty === "facile" && /[jkwxy]/.test(candidate)) return false;
+      if (current && current.split("").some((letter, index) => letter !== "_" && letter !== candidate[index])) return false;
+      return guesses.every((guess) => score(evaluate(guess, candidate)) === score(evaluate(guess, answer)));
+    });
+    if (!candidates.length) return setNotice("Nessuna parola compatibile con gli indizi e lo schema inserito");
+    const suggestion = candidates[Math.floor(Math.random() * candidates.length)];
+    setCurrent(suggestion);
+    setNotice("Ho inserito una parola compatibile: puoi modificarla o inviarla");
+  };
+
+  const cycleAnnotation = (rowIndex, letterIndex) => {
+    const order = ["", "absent", "present", "correct"];
+    const next = annotations.map((row) => [...row]);
+    next[rowIndex] ||= Array(5).fill("");
+    next[rowIndex][letterIndex] = order[(order.indexOf(next[rowIndex][letterIndex]) + 1) % order.length];
+    setAnnotations(next);
+    if (mode === "daily") localStorage.setItem(storageKey, JSON.stringify({ guesses, annotations: next, completed }));
+  };
+
+  const clearAnnotations = () => {
+    const next = guesses.map(() => Array(5).fill(""));
+    setAnnotations(next);
+    if (mode === "daily") localStorage.setItem(storageKey, JSON.stringify({ guesses, annotations: next, completed }));
+    setNotice("Colori manuali azzerati");
   };
 
   const share = async () => {
-    const squares = guesses.map((guess) => evaluate(guess, answer).map((state) => ({ correct: "🟩", present: "🟨", absent: "🟥" }[state])).join("")).join("\n");
+    const squares = guesses.map((guess) => {
+      const digits = score(evaluate(guess, answer));
+      return `🟩${digits[0]} 🟨${digits[1]} 🟥${digits[2]}`;
+    }).join("\n");
     const text = `PAROLA500 #${puzzleNo} ${won ? guesses.length : "X"}/8\n${squares}\n${window.location.href}`;
     try {
       if (navigator.share) await navigator.share({ title: "PAROLA500", text });
@@ -244,19 +266,20 @@ export function App() {
           {Array.from({ length: MAX_GUESSES }).map((_, rowIndex) => {
             const guess = guesses[rowIndex];
             const typed = rowIndex === guesses.length ? current : "";
-            const states = guess ? evaluate(guess, answer) : [];
-            const digits = guess ? score(states) : "";
+            const digits = guess ? score(evaluate(guess, answer)) : "";
             return (
               <div className="board-row" key={rowIndex}>
-                {Array.from({ length: 5 }).map((__, index) => <div className={`tile ${states[index] || ""} ${guess ? "revealed" : ""}`} key={index} style={{ "--delay": `${index * 80}ms` }}>{(guess || typed)[index]?.toUpperCase() || ""}</div>)}
+                {Array.from({ length: 5 }).map((__, index) => guess ? (
+                  <button className={`tile letter-tile submitted ${annotations[rowIndex]?.[index] || ""}`} key={index} onClick={(event) => { event.stopPropagation(); cycleAnnotation(rowIndex, index); }} aria-label={`${guess[index].toUpperCase()}, clicca per cambiare colore`}>{guess[index].toUpperCase()}</button>
+                ) : <div className="tile letter-tile" key={index}>{typed[index]?.toUpperCase() || ""}</div>)}
                 {["correct", "present", "absent"].map((state, index) => <div className={`tile score ${state} ${guess ? "revealed" : "preview"}`} key={state} style={{ "--delay": `${(index + 5) * 80}ms` }}>{digits[index] || ""}</div>)}
               </div>
             );
           })}
         </section>
         <section className="keyboard" aria-label="Tastiera virtuale">
-          {ROWS.map((row) => <div className="key-row" key={row}>{row.split("").map((letter) => <button className={`key ${keyStates[letter] || ""}`} key={letter} onClick={() => input(letter)}>{letter}</button>)}</div>)}
-          <div className="action-row"><button className="action-key" onClick={() => input("BACKSPACE")}>Cancella</button><button className="action-key hint" onClick={revealHint}>Aiuto</button><button className="action-key enter" onClick={() => input("ENTER")}>Invia</button></div>
+          {ROWS.map((row, rowIndex) => <div className="key-row" key={row}>{row.split("").map((letter) => <button className={`key ${usedLetters.has(letter) ? "used" : ""}`} key={letter} onClick={() => input(letter)}>{letter}</button>)}{rowIndex === 2 && <button className="key delete-key" onClick={() => input("BACKSPACE")} aria-label="Cancella">DEL</button>}</div>)}
+          <div className="action-row"><button className="action-key" onClick={clearAnnotations}>Azzera</button><button className="action-key hint" onClick={suggestWord}>Suggerisci</button><button className="action-key" onClick={() => input("SPACE")}>Spazio</button><button className="action-key enter" onClick={() => input("ENTER")}>Invia</button></div>
         </section>
       </main>
 
@@ -266,9 +289,10 @@ export function App() {
       {modal === "help" && (
         <Overlay onClose={() => setModal(null)} labelledBy="help-title">
           <p className="eyebrow">Benvenuto</p><h1 id="help-title">Come si gioca</h1>
-          <p>Trova la parola italiana di cinque lettere in otto tentativi.</p>
-          <div className="example-row" aria-label="Esempio di risultato">{["P", "A", "N", "E", "L"].map((letter, index) => <span key={letter + index} className={`mini-tile ${["correct", "absent", "present", "absent", "absent"][index]}`}>{letter}</span>)}<span className="mini-tile correct">1</span><span className="mini-tile present">1</span><span className="mini-tile absent">3</span></div>
-          <p><strong>113</strong> significa: una lettera al posto giusto, una al posto sbagliato e tre assenti.</p>
+          <p>Trova la parola italiana di cinque lettere in otto tentativi. Dopo ogni parola vedrai soltanto tre conteggi: il gioco non rivela quali lettere sono giuste.</p>
+          <div className="example-row" aria-label="Esempio di risultato">{["P", "A", "N", "E", "L"].map((letter, index) => <span key={letter + index} className="mini-tile neutral">{letter}</span>)}<span className="mini-tile correct">1</span><span className="mini-tile present">1</span><span className="mini-tile absent">3</span></div>
+          <p><strong>1 verde</strong>: lettera al posto giusto. <strong>1 gialla</strong>: lettera presente ma altrove. <strong>3 rosse</strong>: lettere assenti.</p>
+          <ul className="rules-list"><li>Clicca su una lettera già inviata per marcarla: rosso → giallo → verde → neutro.</li><li><strong>Azzera</strong> cancella tutte le tue marcature.</li><li><strong>Spazio</strong> inserisce un segnaposto; <strong>Suggerisci</strong> propone una parola compatibile con i conteggi.</li></ul>
           <button className="primary" onClick={() => setModal(null)}>Inizia a giocare</button>
         </Overlay>
       )}

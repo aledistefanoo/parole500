@@ -4,7 +4,9 @@ Un gioco di parole quotidiano in italiano, ispirato alla meccanica di Word500 ma
 
 ## Come si gioca
 
-Indovina una parola italiana di cinque lettere in otto tentativi. Le cinque tessere mostrano la posizione delle lettere; le tre tessere finali riassumono quante sono verdi, gialle e rosse. `500` è la soluzione perfetta.
+Indovina una parola italiana di cinque lettere in otto tentativi. Dopo ogni parola il gioco mostra soltanto tre conteggi: lettere al posto giusto, presenti al posto sbagliato e assenti. Non rivela quali lettere hanno prodotto i conteggi: puoi dedurlo e colorare manualmente le tessere cliccandole. `500` è la soluzione perfetta.
+
+Il pulsante **Suggerisci** propone una parola compatibile con tutti i conteggi già ottenuti, mentre **Spazio** permette di costruire uno schema con posizioni ancora ignote.
 
 ## Sviluppo locale
 
@@ -24,3 +26,4 @@ npm run dev
 - Il gioco del giorno è deterministico e uguale per tutti.
 - Progressi e statistiche restano nel browser tramite `localStorage`.
 - Non usa servizi esterni, account o pubblicità.
+- Il dizionario di gioco comprende 9.246 parole italiane di cinque lettere, derivate dalle liste open source MIT di [napolux/paroleitaliane](https://github.com/napolux/paroleitaliane).
