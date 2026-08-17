@@ -186,21 +186,6 @@ export function App() {
     setModal(null);
   };
 
-  const suggestWord = () => {
-    if (!guesses.length) return setNotice("Fai almeno un tentativo per ricevere un suggerimento");
-    const candidates = ITALIAN_WORDS.filter((candidate) => {
-      if (guesses.includes(candidate)) return false;
-      if (difficulty !== "avanzata" && new Set(candidate).size !== 5) return false;
-      if (difficulty === "facile" && /[jkwxy]/.test(candidate)) return false;
-      if (current && current.split("").some((letter, index) => letter !== "_" && letter !== candidate[index])) return false;
-      return guesses.every((guess) => score(evaluate(guess, candidate)) === score(evaluate(guess, answer)));
-    });
-    if (!candidates.length) return setNotice("Nessuna parola compatibile con gli indizi e lo schema inserito");
-    const suggestion = candidates[Math.floor(Math.random() * candidates.length)];
-    setCurrent(suggestion);
-    setNotice("Ho inserito una parola compatibile: puoi modificarla o inviarla");
-  };
-
   const cycleAnnotation = (rowIndex, letterIndex) => {
     const order = ["", "absent", "present", "correct"];
     const next = annotations.map((row) => [...row]);
@@ -279,7 +264,7 @@ export function App() {
         </section>
         <section className="keyboard" aria-label="Tastiera virtuale">
           {ROWS.map((row, rowIndex) => <div className="key-row" key={row}>{row.split("").map((letter) => <button className={`key ${usedLetters.has(letter) ? "used" : ""}`} key={letter} onClick={() => input(letter)}>{letter}</button>)}{rowIndex === 2 && <button className="key delete-key" onClick={() => input("BACKSPACE")} aria-label="Cancella">DEL</button>}</div>)}
-          <div className="action-row"><button className="action-key" onClick={clearAnnotations}>Azzera</button><button className="action-key hint" onClick={suggestWord}>Suggerisci</button><button className="action-key" onClick={() => input("SPACE")}>Spazio</button><button className="action-key enter" onClick={() => input("ENTER")}>Invia</button></div>
+          <div className="action-row"><button className="action-key" onClick={clearAnnotations}>Azzera</button><button className="action-key" onClick={() => input("SPACE")}>Spazio</button><button className="action-key enter" onClick={() => input("ENTER")}>Invia</button></div>
         </section>
       </main>
 
@@ -292,7 +277,7 @@ export function App() {
           <p>Trova la parola italiana di cinque lettere in otto tentativi. Dopo ogni parola vedrai soltanto tre conteggi: il gioco non rivela quali lettere sono giuste.</p>
           <div className="example-row" aria-label="Esempio di risultato">{["P", "A", "N", "E", "L"].map((letter, index) => <span key={letter + index} className="mini-tile neutral">{letter}</span>)}<span className="mini-tile correct">1</span><span className="mini-tile present">1</span><span className="mini-tile absent">3</span></div>
           <p><strong>1 verde</strong>: lettera al posto giusto. <strong>1 gialla</strong>: lettera presente ma altrove. <strong>3 rosse</strong>: lettere assenti.</p>
-          <ul className="rules-list"><li>Clicca su una lettera già inviata per marcarla: rosso → giallo → verde → neutro.</li><li><strong>Azzera</strong> cancella tutte le tue marcature.</li><li><strong>Spazio</strong> inserisce un segnaposto; <strong>Suggerisci</strong> propone una parola compatibile con i conteggi.</li></ul>
+          <ul className="rules-list"><li>Clicca su una lettera già inviata per marcarla: rosso → giallo → verde → neutro.</li><li><strong>Azzera</strong> cancella tutte le tue marcature.</li><li><strong>Spazio</strong> inserisce un segnaposto nelle posizioni ancora ignote.</li></ul>
           <button className="primary" onClick={() => setModal(null)}>Inizia a giocare</button>
         </Overlay>
       )}

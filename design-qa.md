@@ -15,7 +15,7 @@
 - Side-by-side comparison: `/Users/alessandro.distefano/Documents/ChatGPT/New project/parola500/qa/full-comparison-final.png`
 - Desktop CSS viewport: 1178 × 1404 at density 1. The in-app browser capped a normal viewport capture at 1178 × 1200; measured page extent was 1178 × 1404.
 - Mobile CSS viewport and capture: 390 × 844 at density 1.
-- Corrected state tested in browser: practice puzzle with one submitted guess (`ZAINO` → `113`), one manual red annotation, and a compatible suggested word (`TIMEO`).
+- Corrected state tested in browser: practice puzzle with one submitted guess (`ZAINO` → `113`) and one manual red annotation.
 
 **Full-view comparison evidence**
 
@@ -36,7 +36,6 @@ The combined comparison confirms the same dark page structure, 1000 px header, e
 - Verified that submitted letters stay neutral while only the three count tiles reveal `113`.
 - Clicked a submitted letter and verified the manual cycle begins at red; used **Azzera** and verified it returns to neutral.
 - Verified that the keyboard only marks used keys neutrally and never reveals semantic colors.
-- Verified **Suggerisci** inserts a word compatible with every previous count without identifying a secret letter.
 - Verified **Spazio** inserts `_` as an unknown-position placeholder.
 - Submitted `ZAINO`, confirming acceptance by the expanded 9,246-word dictionary.
 - Opened and closed Statistics.

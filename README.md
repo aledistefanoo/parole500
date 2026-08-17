@@ -6,7 +6,7 @@ Un gioco di parole quotidiano in italiano, ispirato alla meccanica di Word500 ma
 
 Indovina una parola italiana di cinque lettere in otto tentativi. Dopo ogni parola il gioco mostra soltanto tre conteggi: lettere al posto giusto, presenti al posto sbagliato e assenti. Non rivela quali lettere hanno prodotto i conteggi: puoi dedurlo e colorare manualmente le tessere cliccandole. `500` è la soluzione perfetta.
 
-Il pulsante **Suggerisci** propone una parola compatibile con tutti i conteggi già ottenuti, mentre **Spazio** permette di costruire uno schema con posizioni ancora ignote.
+Il pulsante **Spazio** permette di costruire uno schema con posizioni ancora ignote.
 
 ## Sviluppo locale
 

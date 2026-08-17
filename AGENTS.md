@@ -12,5 +12,5 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 - Match Word500's deduction model: submitted letter tiles stay neutral; only the three green/yellow/red count tiles reveal information.
 - Let players click submitted letter tiles to cycle manual notes red → yellow → green → neutral, with a control that clears all annotations.
-- The hint must suggest a dictionary word compatible with all revealed counts; it must never directly reveal a secret letter.
+- Do not include suggestions or automatic hints; players must solve the clues independently.
 - Accept a broad Italian five-letter dictionary rather than a small curated guess list.
