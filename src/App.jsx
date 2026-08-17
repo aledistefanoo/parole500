@@ -275,7 +275,7 @@ export function App() {
         <Overlay onClose={() => setModal(null)} labelledBy="help-title">
           <p className="eyebrow">Benvenuto</p><h1 id="help-title">Come si gioca</h1>
           <p>Trova la parola italiana di cinque lettere in otto tentativi. Dopo ogni parola vedrai soltanto tre conteggi: il gioco non rivela quali lettere sono giuste.</p>
-          <div className="example-row" aria-label="Esempio di risultato">{["P", "A", "N", "E", "L"].map((letter, index) => <span key={letter + index} className="mini-tile neutral">{letter}</span>)}<span className="mini-tile correct">1</span><span className="mini-tile present">1</span><span className="mini-tile absent">3</span></div>
+          <div className="example-row" aria-label="Esempio di risultato">{["P", "E", "S", "C", "A"].map((letter, index) => <span key={letter + index} className="mini-tile neutral">{letter}</span>)}<span className="mini-tile correct">1</span><span className="mini-tile present">1</span><span className="mini-tile absent">3</span></div>
           <p><strong>1 verde</strong>: lettera al posto giusto. <strong>1 gialla</strong>: lettera presente ma altrove. <strong>3 rosse</strong>: lettere assenti.</p>
           <ul className="rules-list"><li>Clicca su una lettera già inviata per marcarla: rosso → giallo → verde → neutro.</li><li><strong>Azzera</strong> cancella tutte le tue marcature.</li><li><strong>Spazio</strong> inserisce un segnaposto nelle posizioni ancora ignote.</li></ul>
           <button className="primary" onClick={() => setModal(null)}>Inizia a giocare</button>

@@ -14,3 +14,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Let players click submitted letter tiles to cycle manual notes red → yellow → green → neutral, with a control that clears all annotations.
 - Do not include suggestions or automatic hints; players must solve the clues independently.
 - Accept a broad Italian five-letter dictionary rather than a small curated guess list.
+- Use only Italian words in onboarding examples and visible game copy.
