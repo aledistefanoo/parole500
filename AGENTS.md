@@ -15,3 +15,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Do not include suggestions or automatic hints; players must solve the clues independently.
 - Accept a broad Italian five-letter dictionary rather than a small curated guess list.
 - Use only Italian words in onboarding examples and visible game copy.
+- Keep the complete eight-row board, keyboard, and primary controls visible together in a standard Mac desktop viewport without scrolling.

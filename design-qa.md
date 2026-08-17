@@ -23,9 +23,9 @@ The combined comparison confirms the same dark page structure, 1000 px header, e
 
 **Focused-region comparison evidence**
 
-- Board measured at 762 × 762 CSS px on desktop, matching the target's dominant square board scale.
-- Header measured at 1000 × 112 CSS px.
-- Keyboard measured at 1000 × 361 CSS px and uses the same three letter rows plus an action row.
+- At 1440 × 900, the board measures 500 × 500 CSS px, the header 920 × 64 px, and the keyboard 800 × 209 px.
+- At 1280 × 800, the board adapts to 440 × 440 CSS px and the keyboard to 800 × 193 px.
+- In both Mac desktop viewports the body height equals the viewport height: all eight rows, the complete keyboard, primary actions, and footer remain visible without scrolling.
 - Mobile board measured at 374 × 374 CSS px; keyboard measured at 374 × 209 CSS px. Total page width remained 390 px with no horizontal or vertical overflow at 390 × 844.
 - Modal and statistics captures confirm readable type, clear hierarchy, correct focus targets, and no clipped controls.
 
@@ -45,8 +45,8 @@ The combined comparison confirms the same dark page structure, 1000 px header, e
 **Comparison history**
 
 - Iteration 1 — P2: desktop board and keyboard were visibly smaller than the reference. Board was 612 px wide and keyboard 760 px wide.
-- Fix: increased the desktop board to 762 px, matched row/column gaps, increased the header to 112 px, increased keyboard key height, and expanded the keyboard/game container to 1000 px.
-- Post-fix evidence: desktop metrics show board 762 × 762, header 1000 × 112, and keyboard 1000 × 361. Mobile sizing remains unchanged under the 660 px breakpoint and still fits 390 × 844 without overflow.
+- Fix: the earlier large desktop composition was replaced with a height-aware board capped at 500 px, a 64 px header, and compact 36–44 px keyboard keys.
+- Post-fix evidence: the full game fits 1440 × 900 and 1280 × 800 without overflow, while mobile sizing remains controlled independently under the 660 px breakpoint.
 
 **Findings**
 
