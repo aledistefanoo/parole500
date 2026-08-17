@@ -14,12 +14,12 @@ const ANSWERS = [
 
 const ROWS = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 const MAX_GUESSES = 8;
-const DAY_ZERO = Date.UTC(2026, 0, 1);
+const LAUNCH_DAY = Date.UTC(2026, 7, 17);
 
 function dayNumber() {
   const now = new Date();
   const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-  return Math.floor((today - DAY_ZERO) / 86400000);
+  return Math.max(1, Math.floor((today - LAUNCH_DAY) / 86400000) + 1);
 }
 
 function evaluate(guess, answer) {
@@ -85,7 +85,7 @@ export function App() {
 
   const puzzleNo = dayNumber();
   const difficultyOffset = { facile: 0, classica: 11, avanzata: 23 }[difficulty];
-  const answer = mode === "daily" ? ANSWERS[((puzzleNo + difficultyOffset) % ANSWERS.length + ANSWERS.length) % ANSWERS.length] : ANSWERS[practiceIndex];
+  const answer = mode === "daily" ? ANSWERS[(((puzzleNo - 1) + difficultyOffset) % ANSWERS.length + ANSWERS.length) % ANSWERS.length] : ANSWERS[practiceIndex];
   const storageKey = `parola500-${puzzleNo}-${difficulty}`;
   const won = guesses.at(-1) === answer;
   const gameOver = won || guesses.length >= MAX_GUESSES;

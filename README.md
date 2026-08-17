@@ -24,6 +24,7 @@ npm run dev
 ## Note
 
 - Il gioco del giorno è deterministico e uguale per tutti.
+- Il contatore parte da **Gioco del giorno #1** il 17 agosto 2026 e aumenta di uno ogni giorno.
 - Progressi e statistiche restano nel browser tramite `localStorage`.
 - Non usa servizi esterni, account o pubblicità.
 - Il dizionario di gioco comprende 9.246 parole italiane di cinque lettere, derivate dalle liste open source MIT di [napolux/paroleitaliane](https://github.com/napolux/paroleitaliane).

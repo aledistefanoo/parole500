@@ -16,3 +16,4 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Accept a broad Italian five-letter dictionary rather than a small curated guess list.
 - Use only Italian words in onboarding examples and visible game copy.
 - Keep the complete eight-row board, keyboard, and primary controls visible together in a standard Mac desktop viewport without scrolling.
+- The public daily-game counter starts at #1 on 2026-08-17 and increments once per local calendar day.
